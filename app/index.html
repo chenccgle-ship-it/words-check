@@ -1,1 +1,31 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>words check</title><script src="vendor/xlsx.full.min.js"></script><link rel="stylesheet" href="style.css"></head><body><header><div class="brand">words check</div><nav class="topactions"><button id="chooseCourses">▧ 选择课程</button><button id="manageWords">▤ 管理词库</button><button id="fullscreen">⛶ 全屏课堂</button></nav></header><div class="shell"><aside><h3>我的课程 <small id="total"></small></h3><div class="courses" id="courses"></div><div class="asidebottom"><button id="import">＋ 导入 Excel 课程</button><button id="template">↓ 下载 Excel 模板</button><button id="manual">＋ 手动添加单词</button><button id="library">▤ 管理单词库</button><small>每个工作表对应一门课程。<br>数据自动保存在当前浏览器。</small></div></aside><main><div class="intro"><div><div class="eyebrow">CLASSROOM / VOCABULARY</div><h1>让每个单词，都有回响。</h1><div class="muted">选一门课，抽几张卡，开启今天的单词挑战。</div></div><span class="pill">● 课堂抽查模式</span></div><div class="settings"><label>本次抽取<input id="count" type="number" min="1" max="50" value="5"></label><label>检测方式<select id="mode"><option value="free">自由揭晓 · 双面遮挡</option><option value="cn">看中文 · 说英文</option><option value="en">看英文 · 说中文</option></select></label><label style="display:flex;align-items:center;padding-bottom:11px"><input type="checkbox" id="avoid" checked style="width:auto"> 优先抽未出现的词</label><button class="primary" id="draw">↻ 随机抽取</button></div><div class="bar"><div><b>本轮单词</b> <small id="round"></small></div><div><button id="hide">全部遮挡</button> <button id="reveal">全部揭晓</button></div></div><div class="cards" id="cards"></div><div class="foot"><span>✦ 点击卡片中的中文或英文区域，独立揭晓或重新遮挡。</span><span id="remaining"></span></div></main></div><input type="file" accept=".xlsx,.xls" id="file" hidden><dialog id="modal"></dialog><div class="toast" id="toast"></div><script src="default-words.js"></script><script src="app.js"></script></body></html>
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#14251e"><title>words check</title>
+  <script src="vendor/xlsx.full.min.js"></script><link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="brand">words check<span class="brand-dot" aria-hidden="true">.</span></div>
+    <div class="course-current" aria-label="当前课程"></div>
+    <nav class="topactions" aria-label="课堂工具"><button id="chooseCourses">选择课程</button><button id="manageWords">管理词库</button><button id="fullscreen">全屏课堂</button></nav>
+  </header>
+  <div class="shell">
+    <aside hidden><span id="total"></span><div id="courses"></div><button id="import">导入 Excel</button><button id="template">下载模板</button><button id="manual">添加单词</button><button id="library">管理词库</button></aside>
+    <main aria-label="单词抽查">
+      <div class="settings">
+        <label for="count">抽取 <input id="count" type="number" min="1" max="50" value="5"> 个词</label>
+        <label for="mode"><span class="control-label">检测方式</span><select id="mode"><option value="en" selected>看英文 · 说中文</option><option value="cn">看中文 · 说英文</option><option value="free">自由揭晓 · 双面遮挡</option></select></label>
+        <label class="avoid-option"><input type="checkbox" id="avoid" checked> 优先抽未出现的词</label>
+        <button class="primary" id="draw">重新抽取 <span aria-hidden="true">↗</span></button>
+      </div>
+      <div class="bar"><div class="round-meta"><span id="round"></span><div id="barStats"></div></div><div class="reveal-actions"><button id="hide">全部遮挡</button><button id="reveal">全部揭晓</button></div></div>
+      <div class="cards" id="cards" aria-label="本页单词"></div>
+      <div class="foot"><span></span><span id="remaining"></span><span class="keyboard-hint">← → 翻页</span></div>
+    </main>
+  </div>
+  <input type="file" accept=".xlsx,.xls" id="file" hidden><dialog id="modal" aria-label="词库与课程"></dialog><div class="toast" id="toast" role="status"></div>
+  <script src="default-words.js"></script><script src="app.js"></script>
+</body>
+</html>

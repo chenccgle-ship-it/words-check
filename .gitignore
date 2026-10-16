@@ -1,4 +1,7 @@
 node_modules/
+.taste-skill/
+prepare-source.cjs
+scripts/upload-manifest.mjs
 dist/
 runtime/
 *.log

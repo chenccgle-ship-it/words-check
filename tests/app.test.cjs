@@ -14,14 +14,14 @@ class Element{
  showModal(){this.open=true}close(){this.open=false}
  click(){return this.onclick?.()}
 }
-function harness(){
+function harness(initialWidth=1440){
  const nodes=new Map();const get=selector=>{if(!nodes.has(selector))nodes.set(selector,new Element());return nodes.get(selector)};
  get('#count').value='5';get('#mode').value='en';get('#avoid').checked=true;
- let persisted,exported;
+ let persisted,exported,width=initialWidth;const documentEvents=new Map(),windowEvents=new Map();
  const XLSX={...SheetJS,writeFile:wb=>{exported=SheetJS.write(wb,{type:'buffer',bookType:'xlsx'})}};
- const ctx=vm.createContext({console,crypto:webcrypto,document:{querySelector:get,createElement:()=>new Element(),addEventListener(){}},localStorage:{getItem:()=>null,setItem:(_,value)=>{persisted=JSON.parse(value)}},window:{XLSX},XLSX,setTimeout:()=>0,clearTimeout(){},confirm:()=>true,prompt:()=>null,Date});
+ const ctx=vm.createContext({console,crypto:webcrypto,document:{querySelector:get,createElement:()=>new Element(),addEventListener:(event,handler)=>documentEvents.set(event,handler)},localStorage:{getItem:()=>null,setItem:(_,value)=>{persisted=JSON.parse(value)}},window:{XLSX,matchMedia:()=>({matches:width<=500}),addEventListener:(event,handler)=>windowEvents.set(event,handler)},XLSX,setTimeout:()=>0,clearTimeout(){},confirm:()=>true,prompt:()=>null,Date});
  for(const file of ['default-words.js','app.js'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../app',file),'utf8'),ctx);
- return{get,run:code=>vm.runInContext(code,ctx),persisted:()=>persisted,exported:()=>exported};
+ return{get,run:code=>vm.runInContext(code,ctx),persisted:()=>persisted,exported:()=>exported,setWidth:value=>{width=value;windowEvents.get('resize')?.()},key:key=>documentEvents.get('keydown')?.({key,preventDefault(){}})};
 }
 
 test('default vocabulary has 192 entries across four courses with zero statistics',()=>{
@@ -54,4 +54,13 @@ test('deleting a course removes its cards and words while preserving other cours
 test('reset clears counters without deleting vocabulary',()=>{
  const app=harness();app.run("gradeWord(batch[0],'wrong');gradeWord(batch[1],'correct');resetStats()");
  assert.equal(app.run('db.flatMap(c=>c.words).length'),192);assert.equal(app.run('db.flatMap(c=>c.words).every(w=>w.wrongCount===0&&w.correctCount===0)'),true);
+});
+test('small screens use one word per page and resizing preserves the current word group',()=>{
+ const app=harness(390);app.run('page=3;render()');assert.equal(app.get('#cards').children.length,1);assert.equal(app.run('page'),3);
+ app.setWidth(1440);assert.equal(app.get('#cards').children.length,5);assert.equal(app.run('page'),0);
+});
+test('keyboard pagination respects page boundaries and open dialogs',()=>{
+ const app=harness();app.get('#count').value='8';app.run('draw()');app.key('ArrowRight');assert.equal(app.run('page'),1);
+ app.key('ArrowRight');assert.equal(app.run('page'),1);app.get('#modal').open=true;app.key('ArrowLeft');assert.equal(app.run('page'),1);
+ app.get('#modal').open=false;app.key('ArrowLeft');assert.equal(app.run('page'),0);
 });
