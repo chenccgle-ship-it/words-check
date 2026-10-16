@@ -1,0 +1,10 @@
+node_modules/
+dist/
+runtime/
+*.log
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+启动错误.txt

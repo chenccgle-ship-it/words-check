@@ -1,0 +1,14 @@
+{
+  "name": "words-check",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Offline classroom vocabulary checks with Excel import and teacher-led grading.",
+  "license": "MIT",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start": "node scripts/server.cjs",
+    "test": "node --test tests/app.test.cjs",
+    "generate": "node scripts/generate-defaults.mjs",
+    "build:portable": "node scripts/build-portable.mjs"
+  }
+}
